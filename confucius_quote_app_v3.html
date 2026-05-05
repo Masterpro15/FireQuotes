@@ -1,0 +1,179 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500&display=swap');
+  .wrap { padding: 2rem 1.5rem; text-align: center; }
+  .title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 400; letter-spacing: 0.2em; color: var(--color-text-secondary); text-transform: uppercase; margin: 0 0 2rem; }
+  .quote-box { min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; margin: 0 0 2rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-secondary); position: relative; }
+  .quote-mark { font-family: 'IM Fell English', serif; font-size: 72px; line-height: 0.5; color: var(--color-border-secondary); position: absolute; top: 1.2rem; left: 1.2rem; user-select: none; }
+  .quote-text { font-family: 'IM Fell English', serif; font-size: 20px; font-style: italic; line-height: 1.65; color: var(--color-text-primary); margin: 0.5rem 0 0; opacity: 0; transition: opacity 0.4s ease; max-width: 520px; }
+  .quote-text.show { opacity: 1; }
+  .attr { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--color-text-secondary); margin: 1.25rem 0 0; opacity: 0; transition: opacity 0.4s ease 0.15s; }
+  .attr.show { opacity: 1; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.12em; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0.65rem 1.5rem; cursor: pointer; color: var(--color-text-primary); transition: background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn:active { transform: scale(0.97); }
+  .btn.speaking { color: var(--color-text-info); border-color: var(--color-border-info); }
+  .counter { font-size: 12px; color: var(--color-text-tertiary); margin: 1rem 0 0; font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only">Confucius quote generator with text to speech — click reveal for a new quote, click speak to hear it</h2>
+  <p class="title">The Analects of Confucius</p>
+  <div class="quote-box">
+    <span class="quote-mark">"</span>
+    <p class="quote-text" id="qt"></p>
+    <p class="attr" id="at">— Confucius</p>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="newQuote()">Reveal a Quote</button>
+    <button class="btn" id="speakBtn" onclick="speakQuote()">Speak it</button>
+  </div>
+  <p class="counter" id="ct"></p>
+</div>
+
+<script>
+const quotes = [
+  "It does not matter how slowly you go as long as you do not stop.",
+  "Everything has beauty, but not everyone sees it.",
+  "Our greatest glory is not in never falling, but in rising every time we fall.",
+  "He who learns but does not think is lost. He who thinks but does not learn is in great danger.",
+  "When you know a thing, to hold that you know it; and when you do not know a thing, to allow that you do not know it — this is knowledge.",
+  "Life is really simple, but we insist on making it complicated.",
+  "The man who asks a question is a fool for a minute; the man who does not ask is a fool for his life.",
+  "Real knowledge is to know the extent of one's ignorance.",
+  "Before you embark on a journey of revenge, dig two graves.",
+  "The superior man is modest in his speech but exceeds in his actions.",
+  "Wherever you go, go with all your heart.",
+  "To see what is right and not to do it is want of courage.",
+  "A man who has committed a mistake and doesn't correct it is committing another mistake.",
+  "Choose a job you love, and you will never have to work a day in your life.",
+  "The journey of a thousand miles begins with a single step.",
+  "What the superior man seeks is in himself; what the small man seeks is in others.",
+  "When anger rises, think of the consequences.",
+  "Never contract friendship with a man that is not better than thyself.",
+  "Silence is a true friend who never betrays.",
+  "Respect yourself and others will respect you.",
+  "They must often change who would remain constant in happiness and wisdom.",
+  "By three methods we may learn wisdom: reflection, which is noblest; imitation, which is easiest; and experience, which is the bitterest.",
+  "The man of virtue, wishing to be established himself, seeks also to establish others.",
+  "To be wronged is nothing, unless you continue to remember it.",
+  "He who speaks without modesty will find it difficult to make his words good.",
+  "When you see a good man, think of emulating him; when you see a bad man, examine your own heart.",
+  "Hold faithfulness and sincerity as first principles.",
+  "The superior man thinks always of virtue; the common man thinks of comfort.",
+  "To know what is right and not to do it is the worst cowardice.",
+  "A man who does not think and plan long ahead will find trouble right at his door.",
+  "Fine words and an insinuating appearance are seldom associated with true virtue.",
+  "The cautious seldom err.",
+  "If you look into your own heart, and you find nothing wrong there, what is there to worry about?",
+  "The object of the superior man is truth.",
+  "The man of wisdom is never of two minds; the man of benevolence never worries; the man of courage is never afraid.",
+  "To go beyond is as wrong as to fall short.",
+  "He who merely knows right principles is not equal to him who loves them.",
+  "Without an acquaintance with the rules of propriety, it is impossible for character to be established.",
+  "When you have faults, do not fear to abandon them.",
+  "The superior man is satisfied and composed; the mean man is always full of distress.",
+  "Study the past if you would define the future.",
+  "If a man takes no thought about what is distant, he will find sorrow near at hand.",
+  "Virtue is not left to stand alone. He who practices it will have neighbors.",
+  "The superior man does not, even for the space of a single meal, act contrary to virtue.",
+  "When prosperity comes, do not use all of it.",
+  "The gem cannot be polished without friction, nor man perfected without trials.",
+  "Forget injuries, never forget kindnesses.",
+  "Act with kindness, but do not expect gratitude.",
+  "Better a diamond with a flaw than a pebble without.",
+  "The strength of a nation derives from the integrity of the home.",
+  "Humility is the solid foundation of all virtues.",
+  "To see and listen to the wicked is already the beginning of wickedness.",
+  "Without knowing the force of words, it is impossible to know men.",
+  "He who learns but does not think is lost; he who thinks but does not learn is in great danger.",
+  "The will to win, the desire to succeed, the urge to reach your full potential — these are the keys that will unlock the door to personal excellence.",
+  "Recompense injury with justice, and recompense kindness with kindness.",
+  "The superior man is catholic and no partisan.",
+  "When it is obvious that the goals cannot be reached, don't adjust the goals, adjust the action steps.",
+  "He that would perfect his work must first sharpen his tools.",
+  "In all things, success depends upon previous preparation.",
+  "To practice five things under all circumstances constitutes perfect virtue: gravity, generosity, sincerity, earnestness, and kindness.",
+  "Faithfulness and sincerity are the highest things.",
+  "The more man meditates upon good thoughts, the better will be his world and the world at large.",
+  "A superior man is modest in his speech but exceeds in his actions.",
+  "If your plan is for one year, plant rice. If your plan is for ten years, plant trees. If your plan is for one hundred years, educate children.",
+  "Attack the evil that is within yourself, rather than attacking the evil that is in others.",
+  "He who knows all the answers has not been asked all the questions.",
+  "The expectations of life depend upon diligence; the mechanic that would perfect his work must first sharpen his tools.",
+  "To be able under all circumstances to practice five things constitutes perfect virtue: these five things are gravity, generosity of soul, sincerity, earnestness, and kindness.",
+  "Only the wisest and stupidest of men never change.",
+  "When you know a thing, hold that you know it; and when you do not know a thing, allow that you do not know it.",
+  "I hear and I forget. I see and I remember. I do and I understand.",
+  "He who wishes to secure the good of others has already secured his own.",
+  "The man who moves a mountain begins by carrying away small stones.",
+  "Do not impose on others what you yourself do not desire.",
+  "A youth, when at home, should be filial; abroad, respectful to his elders.",
+  "Learning is like rowing upstream: not to advance is to drop back.",
+  "He who will not economize will have to agonize.",
+  "Consideration for others is the basis of a good life.",
+  "The superior man makes the difficulty to be overcome his first interest; success comes only later.",
+  "Music produces a kind of pleasure which human nature cannot do without.",
+  "To know what you know and what you do not know — that is true knowledge.",
+  "The funniest people are the saddest ones.",
+  "A man who has committed a mistake and doesn't correct it is committing another mistake.",
+];
+
+let deck = [], count = 0, currentQuote = "", speaking = false;
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function newQuote() {
+  if (speaking) { speechSynthesis.cancel(); setSpeaking(false); }
+  if (deck.length === 0) deck = shuffle([...Array(quotes.length).keys()]);
+  const i = deck.pop();
+  currentQuote = quotes[i];
+  count++;
+  const qt = document.getElementById('qt');
+  const at = document.getElementById('at');
+  qt.classList.remove('show');
+  at.classList.remove('show');
+  setTimeout(() => {
+    qt.textContent = currentQuote;
+    qt.classList.add('show');
+    at.classList.add('show');
+    document.getElementById('ct').textContent = count === 1 ? '1 quote revealed' : count + ' quotes revealed';
+  }, 200);
+}
+
+function setSpeaking(val) {
+  speaking = val;
+  const btn = document.getElementById('speakBtn');
+  btn.textContent = val ? 'Stop' : 'Speak it';
+  btn.classList.toggle('speaking', val);
+}
+
+function speakQuote() {
+  if (!currentQuote) return;
+  if (speaking) { speechSynthesis.cancel(); setSpeaking(false); return; }
+  const utter = new SpeechSynthesisUtterance(currentQuote);
+  utter.rate = 0.85;
+  utter.pitch = 0.9;
+
+  const voices = speechSynthesis.getVoices();
+  const preferred = voices.find(v =>
+    v.lang.startsWith('zh') || v.lang.startsWith('ja') || v.lang.startsWith('ko')
+  ) || voices.find(v => v.lang.startsWith('en'));
+  if (preferred) utter.voice = preferred;
+
+  utter.onstart = () => setSpeaking(true);
+  utter.onend = () => setSpeaking(false);
+  utter.onerror = () => setSpeaking(false);
+  speechSynthesis.speak(utter);
+}
+
+speechSynthesis.onvoiceschanged = () => {};
+newQuote();
+</script>
