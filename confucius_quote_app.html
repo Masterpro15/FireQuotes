@@ -1,0 +1,83 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500&display=swap');
+  .wrap { padding: 2rem 1.5rem; text-align: center; }
+  .title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 400; letter-spacing: 0.2em; color: var(--color-text-secondary); text-transform: uppercase; margin: 0 0 2rem; }
+  .quote-box { min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; margin: 0 0 2rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-secondary); position: relative; }
+  .quote-mark { font-family: 'IM Fell English', serif; font-size: 72px; line-height: 0.5; color: var(--color-border-secondary); position: absolute; top: 1.2rem; left: 1.2rem; user-select: none; }
+  .quote-text { font-family: 'IM Fell English', serif; font-size: 20px; font-style: italic; line-height: 1.65; color: var(--color-text-primary); margin: 0.5rem 0 0; opacity: 0; transition: opacity 0.4s ease; max-width: 520px; }
+  .quote-text.show { opacity: 1; }
+  .attr { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--color-text-secondary); margin: 1.25rem 0 0; opacity: 0; transition: opacity 0.4s ease 0.15s; }
+  .attr.show { opacity: 1; }
+  .btn { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.12em; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 0.65rem 2rem; cursor: pointer; color: var(--color-text-primary); transition: background 0.15s, transform 0.1s; }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn:active { transform: scale(0.97); }
+  .counter { font-size: 12px; color: var(--color-text-tertiary); margin: 1rem 0 0; font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
+</style>
+
+<div class="wrap">
+  <h2 class="sr-only">Confucius quote generator — click the button to reveal a random quote</h2>
+  <p class="title">The Analects of Confucius</p>
+
+  <div class="quote-box">
+    <span class="quote-mark">"</span>
+    <p class="quote-text" id="qt">Click the button to receive wisdom.</p>
+    <p class="attr" id="at">— Confucius</p>
+  </div>
+
+  <button class="btn" onclick="newQuote()">Reveal a Quote</button>
+  <p class="counter" id="ct"></p>
+</div>
+
+<script>
+const quotes = [
+  "It does not matter how slowly you go as long as you do not stop.",
+  "Everything has beauty, but not everyone sees it.",
+  "Our greatest glory is not in never falling, but in rising every time we fall.",
+  "He who learns but does not think is lost. He who thinks but does not learn is in great danger.",
+  "When you know a thing, to hold that you know it; and when you do not know a thing, to allow that you do not know it — this is knowledge.",
+  "Life is really simple, but we insist on making it complicated.",
+  "The man who asks a question is a fool for a minute; the man who does not ask is a fool for his life.",
+  "Real knowledge is to know the extent of one's ignorance.",
+  "Before you embark on a journey of revenge, dig two graves.",
+  "The superior man is modest in his speech but exceeds in his actions.",
+  "Wherever you go, go with all your heart.",
+  "To see what is right and not to do it is want of courage.",
+  "A man who has committed a mistake and doesn't correct it is committing another mistake.",
+  "Choose a job you love, and you will never have to work a day in your life.",
+  "The journey with a thousand miles begins with a single step.",
+  "What the superior man seeks is in himself; what the small man seeks is in others.",
+  "When anger rises, think of the consequences.",
+  "To know what you know and what you do not know — that is true knowledge.",
+  "Never contract friendship with a man that is not better than thyself.",
+  "Silence is a true friend who never betrays.",
+  "If you make a mistake and do not correct it, that is called a mistake.",
+  "Respect yourself and others will respect you.",
+  "They must often change who would remain constant in happiness and wisdom.",
+  "By three methods we may learn wisdom: reflection, which is noblest; imitation, which is easiest; and experience, which is the bitterest.",
+  "The will to win, the desire to succeed, the urge to reach your full potential — these are the keys that will unlock the door to personal excellence.",
+];
+
+let last = -1, count = 0;
+
+function newQuote() {
+  let i;
+  do { i = Math.floor(Math.random() * quotes.length); } while (i === last);
+  last = i;
+  count++;
+
+  const qt = document.getElementById('qt');
+  const at = document.getElementById('at');
+  qt.classList.remove('show');
+  at.classList.remove('show');
+
+  setTimeout(() => {
+    qt.textContent = quotes[i];
+    qt.classList.add('show');
+    at.classList.add('show');
+    document.getElementById('ct').textContent = count === 1 ? '1 quote revealed' : count + ' quotes revealed';
+  }, 200);
+}
+
+newQuote();
+</script>
